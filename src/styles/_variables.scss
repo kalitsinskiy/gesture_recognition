@@ -2,6 +2,8 @@ $main-primary: #8739f9;
 $main-secondary: #C651CD;
 $main-dark: #363636;
 
+$white: #fff;
+
 $dark-lighten: #100F10;
 $dark: #1B1B1B;
 $dark-darken: #242424;
@@ -9,6 +11,8 @@ $dark-darken: #242424;
 $font-primary: rgba(#fff, 0.96);
 $font-secondary: rgba(#fff, 0.67);
 $font-dark: rgba(#fff, 0.45);
+
+$transition: .2s ease .05s;
 
 $small-length-first: 0.375rem;
 $small-length-second: 0.625rem;
@@ -22,4 +26,9 @@ $large-length-first: 2.5rem;
 $large-length-second: 3.5rem;
 $large-length-third: 4.5rem;
 
-$left-sidebar-width: 90px;
+$left-sidebar-width: 60px;
+$open-left-sidebar-width: 400px;
+
+$header-height: 80px;
+
+$video-player-height: 633px;

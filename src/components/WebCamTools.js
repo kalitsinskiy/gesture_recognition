@@ -4,7 +4,7 @@ import Webcam from "react-webcam";
 import drawHand from "../utils/drawHand";
 
 
-const WebCamTools = ({ webcamRef, result, isVisible }) => {
+const WebCamTools = ({ webcamRef, result }) => {
     const canvasRef = useRef(null);
     const wrapperRef = useRef(null);
 
@@ -28,11 +28,7 @@ const WebCamTools = ({ webcamRef, result, isVisible }) => {
     }, [result, webcamRef])
 
     return (
-        <div
-            className="web-cam_tools"
-            ref={wrapperRef}
-            style={{ zIndex: isVisible ? 3 : 1}}
-        >
+        <div className="web-cam_tools" ref={wrapperRef}>
             <Webcam
                 ref={webcamRef}
                 className="webcam"
@@ -40,8 +36,8 @@ const WebCamTools = ({ webcamRef, result, isVisible }) => {
                 //     console.log('onUserMedia');
                 // }}
                 videoConstraints={{
-                    width: 640,
-                    height: 480,
+                    width: 'auto',
+                    height: 'auto',
                 }}
             />
 

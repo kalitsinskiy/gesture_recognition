@@ -1,16 +1,14 @@
-import React, { PureComponent, createRef } from "react";
+import React, { createRef, Component } from "react";
 import { isEqual, isEmpty, isNumber } from "lodash";
-// import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-// import YouTube from 'react-youtube';
+import classNames from "classnames";
 
 import "@tensorflow/tfjs";
 import * as handpose from "@tensorflow-models/handpose";
 import fp from "fingerpose";
 
-import WebCamTools from "./components/WebCamTools";
 import VideoList from './components/VideoList';
 import VideoDetail from './components/VideoDetail';
-import SearchBar from './components/Searchbar';
+import Header from './components/Header';
 import LeftSideBar from './components/LeftSideBar';
 
 import youtube from './apis/youtube';
@@ -34,26 +32,27 @@ const initialDetectionState = {
 
 const debugMode = false;
 
-class App extends PureComponent{
+// class App extends PureComponent {
+class App extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             result: null,
-            isVisibleWebCamTools: debugMode,
             detectionResult: initialDetectionState,
             videos: initialPlayList,
             selectedVideo: null,
-            // selectedVideo: initialPlayList[0],
             activeVideoIndex: null,
             isPlayerOpen: false,
+            isOpenLeftSideBar: false,
         }
         this.webcamRef = createRef();
-        // this.playerRef = createRef();
         this.playerRef = null;
         this.confirmTimer = null;
-        this.detectInterval = debugMode ? 1000 : 100;
-        this.confirmTime = debugMode ? 4000 :2000;
+        this.detectInterval = debugMode ? 1000 : 100; // 34 if 30fps
+        this.confirmTime = debugMode ? 4000 : 2000;
+        this.volumeStep = 20;
+        this.rewindStep = 10;
     }
 
     async componentDidMount() {
@@ -80,6 +79,10 @@ class App extends PureComponent{
                 this.confirmTimer = null;
             }
         }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return !(isEqual(this.props, nextProps) && isEqual(this.state, nextState));
     }
 
     detect = async (net) => {
@@ -152,6 +155,7 @@ class App extends PureComponent{
         } = this.state;
 
         switch (gesture){
+            // Start/Pause
             case(highFiveGesture.name): {
                 if (this.playerRef) {
                     const playerState = this.playerRef.getPlayerState();
@@ -162,9 +166,9 @@ class App extends PureComponent{
                         this.playerRef.playVideo();
                     }
                 }
-
                 break;
             }
+            // Confirm
             case(okGesture.name): {
                 if (!isEmpty(videos)) {
                     const selectedVideo = videos[activeVideoIndex];
@@ -173,6 +177,7 @@ class App extends PureComponent{
                 }
                 break;
             }
+            // Stop
             case(fistGesture.name): {
                 if (this.playerRef) {
                     this.playerRef.stopVideo();
@@ -181,6 +186,7 @@ class App extends PureComponent{
 
                 break;
             }
+            // Select next/prev
             case(rightGesture.name): {
                 if (!isEmpty(videos)) {
                     if (isNumber(activeVideoIndex)) {
@@ -205,8 +211,41 @@ class App extends PureComponent{
                 }
                 break;
             }
+            // Volume
+            case(oneFingerUp.name): {
+                if (this.playerRef) {
+                    const currentVolume = this.playerRef.getVolume();
+
+                    this.playerRef.setVolume(currentVolume + this.volumeStep);
+                }
+                break;
+            }
+            case(oneFingerDown.name): {
+                if (this.playerRef) {
+                    const currentVolume = this.playerRef.getVolume();
+
+                    this.playerRef.setVolume(currentVolume - this.volumeStep);
+                }
+                break;
+            }
+            // Rewind
+            case(twoFingerUp.name): {
+                if (this.playerRef) {
+                    const currentTime = this.playerRef.getCurrentTime();
+
+                    this.playerRef.seekTo(currentTime + this.rewindStep, true);
+                }
+                    break;
+            }
+            case(twoFingerDown.name): {
+                if (this.playerRef) {
+                    const currentTime = this.playerRef.getCurrentTime();
+
+                    this.playerRef.seekTo(currentTime - this.rewindStep, true);
+                }
+                break;
+            }
             default: {
-                // console.log(gesture);
                 break;
             }
         }
@@ -223,59 +262,57 @@ class App extends PureComponent{
         })
     };
 
-    handleVideoSelect = (video) => {
-        this.setState({selectedVideo: video})
+    handleVideoSelect = (index) => {
+        const { videos } = this.state;
+
+        if (!isEmpty(videos)) {
+            this.setState({ selectedVideo: videos[index] })
+            this.setState({ activeVideoIndex: index })
+        }
     }
 
     togglePlayerModal = () => {
         this.setState(({ isPlayerOpen }) => ({ isPlayerOpen: !isPlayerOpen }))
     }
 
-    stopPlayer = () => {
-        if (this.state.isPlayerOpen) {
-            this.playerRef.pauseVideo();
-        }
+    toggleLeftSideBarModal = () => {
+        this.setState(({ isOpenLeftSideBar }) => ({ isOpenLeftSideBar: !isOpenLeftSideBar }))
     }
 
     onReady = (event) => {
         console.log(event.target);
+        console.log(event.target.getOptions());
         this.playerRef = event.target;
     };
 
     render() {
         const {
             result,
-            isVisibleWebCamTools,
             selectedVideo,
             videos,
             activeVideoIndex,
+            isOpenLeftSideBar,
         } = this.state;
 
         return (
-            <div className="main-wrapper">
-                <LeftSideBar/>
-
-                <WebCamTools
+            <div
+                className={classNames('main-wrapper', {
+                    'open-left-side-bar': isOpenLeftSideBar,
+                })}
+            >
+                <LeftSideBar
+                    toggle={this.toggleLeftSideBarModal}
                     webcamRef={this.webcamRef}
                     result={result}
-                    isVisible={isVisibleWebCamTools}
+                    isOpen={isOpenLeftSideBar}
                 />
 
                 <div className="content">
-                    <button onClick={() => this.setState({ isVisibleWebCamTools: !isVisibleWebCamTools })}>Toggle Web Cam Tools</button>
-                    <button onClick={this.togglePlayerModal}>Toggle Player Modal</button>
-                    <button onClick={() => this.playerRef.playVideo()}>Run Video</button>
+                    <Header onSearch={this.handleSubmit}/>
 
-                    <SearchBar handleFormSubmit={this.handleSubmit}/>
+                    <div className='playlist'>
+                        {selectedVideo ? <VideoDetail video={selectedVideo} onReady={this.onReady}/> : null}
 
-                    {selectedVideo
-                        ? <div className="active-video">
-                            <VideoDetail video={selectedVideo} onReady={this.onReady}/>
-                        </div>
-                        : null
-                    }
-
-                    <div className='youtube_playlist'>
                         <VideoList
                             handleVideoSelect={this.handleVideoSelect}
                             videos={videos}
@@ -283,36 +320,6 @@ class App extends PureComponent{
                         />
                     </div>
                 </div>
-
-                {/*<Modal isOpen={isPlayerOpen} toggle={this.togglePlayerModal}>*/}
-                {/*    <ModalHeader toggle={this.stopPlayer}>Modal title</ModalHeader>*/}
-                {/*    <ModalBody>*/}
-                {/*        <YouTube*/}
-                {/*            videoId={selectedVideo.id.videoId}*/}
-                {/*            // id={selectedVideo.id}                       // defaults -> null*/}
-                {/*            // className={string}                // defaults -> null*/}
-                {/*            // containerClassName={string}       // defaults -> ''*/}
-                {/*            opts={{*/}
-                {/*                // height: '390',*/}
-                {/*                // width: '640',*/}
-                {/*                playerVars: {*/}
-                {/*                    // https://developers.google.com/youtube/player_parameters*/}
-                {/*                    autoplay: 1,*/}
-                {/*                },*/}
-                {/*            }}                        // defaults -> {}*/}
-                {/*            onReady={this.onReady}                    // defaults -> noop*/}
-                {/*            // onPlay={func}                     // defaults -> noop*/}
-                {/*            // onPause={func}                    // defaults -> noop*/}
-                {/*            // onEnd={func}                      // defaults -> noop*/}
-                {/*            // onError={func}*/}
-                {/*            // defaults -> noop*/}
-                {/*            onPlayerStateChange={e => console.log(e)}*/}
-                {/*            onStateChange={e => console.log(e)}*/}
-                {/*            // onPlaybackRateChange={func}       // defaults -> noop*/}
-                {/*            // onPlaybackQualityChange={func}    // defaults -> noop*/}
-                {/*        />*/}
-                {/*    </ModalBody>*/}
-                {/*</Modal>*/}
             </div>
         );
     }

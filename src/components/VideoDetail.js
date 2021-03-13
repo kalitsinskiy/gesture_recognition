@@ -6,12 +6,9 @@ const VideoDetail = ({ video, onReady}) => {
         return <div>Loading ...</div>;
     }
 
-    // const videoSrc = `https://www.youtube.com/embed/${video.id.videoId}`;
-
     return (
-        <div>
+        <div className="active-video">
             <div className='video-player'>
-                {/*<iframe src={videoSrc} allowFullScreen title='Video player'/>*/}
                 <YouTube
                     videoId={video.id.videoId}
                     // id={selectedVideo.id}                       // defaults -> null

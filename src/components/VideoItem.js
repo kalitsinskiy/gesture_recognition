@@ -1,16 +1,35 @@
 import React from 'react';
+import moment from 'moment';
 
-const VideoItem = ({ video , handleVideoSelect, active }) => {
+const VideoItem = (item) => {
+    const { video , handleVideoSelect, active, index } = item;
+    const {
+        description,
+        thumbnails,
+        title,
+        channelTitle,
+        publishTime,
+        publishedAt,
+    } = video.snippet;
+
     return (
         <div
-            onClick={ () => handleVideoSelect(video)}
+            onClick={() => handleVideoSelect(index)}
             className={`video-item ${active ? 'active' : ''}`}
-
         >
-            <img className='image' src={video.snippet.thumbnails.medium.url} alt={video.snippet.description}/>
+            <img className='image' src={thumbnails.medium.url} alt={description}/>
 
-            <div className='header'>{video.snippet.title}</div>
+            <div className="video-content">
+                <div className='title'>{title}</div>
+
+                <div className="footer">
+                    <p className="channel">{channelTitle}</p>
+
+                    <p className="published">{moment(publishTime || publishedAt).fromNow()}</p>
+                </div>
+            </div>
         </div>
     )
 };
+
 export default VideoItem;
