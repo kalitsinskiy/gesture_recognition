@@ -1,4 +1,4 @@
-import React, { createRef, Component } from "react";
+import React, { createRef, PureComponent } from "react";
 import { isEqual, isEmpty, isNumber } from "lodash";
 import classNames from "classnames";
 
@@ -11,33 +11,40 @@ import VideoDetail from './components/VideoDetail';
 import Header from './components/Header';
 import LeftSideBar from './components/LeftSideBar';
 
+import RecognitionSettings, { defaultRecognitionSettings } from './utils/RecognitionSettings';
+
 import youtube from './apis/youtube';
 
-import highFiveGesture from "./gestures/HighFive";
-import fistGesture from "./gestures/Fist";
-import okGesture from "./gestures/Ok";
-import rightGesture from "./gestures/Right";
-import leftGesture from "./gestures/Left";
-import oneFingerUp from "./gestures/OneFingerUp";
-import twoFingerUp from "./gestures/TwoFingerUp";
-import oneFingerDown from "./gestures/OneFingerDown";
-import twoFingerDown from "./gestures/TwoFingerDown";
+import gestures from "./gestures";
 
 import initialPlayList from './initialPlayList'
+
+const {
+    highFiveGesture,
+    fistGesture,
+    okGesture,
+    leftGesture,
+    rightGesture,
+    oneFingerUp,
+    twoFingerUp,
+    oneFingerDown,
+    twoFingerDown,
+    cornerGesture,
+} = gestures;
 
 const initialDetectionState = {
     gesture: null,
     lastGesture: null,
 };
 
-const debugMode = false;
-
-// class App extends PureComponent {
-class App extends Component {
+class App extends PureComponent {
     constructor(props) {
         super(props);
 
         this.state = {
+            recognitionMode: false,
+            recognitionSettings: RecognitionSettings.getSettings(),
+            debugMode: false,
             result: null,
             detectionResult: initialDetectionState,
             videos: initialPlayList,
@@ -49,22 +56,29 @@ class App extends Component {
         this.webcamRef = createRef();
         this.playerRef = null;
         this.confirmTimer = null;
-        this.detectInterval = debugMode ? 1000 : 100; // 34 if 30fps
-        this.confirmTime = debugMode ? 4000 : 2000;
         this.volumeStep = 20;
         this.rewindStep = 10;
+        this.recognitionInterval = null;
     }
 
-    async componentDidMount() {
-        const net = await handpose.load();
-        // console.log("Handpose model loaded.");
-        setInterval(() => {
-            this.detect(net);
-        }, this.detectInterval);
+    componentDidMount() {
+        if (this.state.recognitionMode) {
+            this.runRecognition();
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {
-        const { detectionResult } = this.state;
+        const {
+            detectionResult,
+            recognitionMode,
+            recognitionSettings,
+        } = this.state;
+
+        const {
+            debugMode,
+            confirmTime,
+            debugConfirmTime,
+        } = recognitionSettings;
 
         if (!isEqual(detectionResult.gesture, prevState.detectionResult.gesture)) {
             if (detectionResult.gesture) {
@@ -73,16 +87,56 @@ class App extends Component {
                     console.log('confirm gesture', detectionResult.gesture);
                     this.handleGestureSubmit(detectionResult.gesture);
                     this.setState({ detectionResult: initialDetectionState });
-                }, this.confirmTime);
+                }, debugMode ? debugConfirmTime : confirmTime);
             } else {
                 clearTimeout(this.confirmTimer);
                 this.confirmTimer = null;
             }
         }
+
+        if (!isEqual(recognitionMode, prevState.recognitionMode)) {
+            if (recognitionMode) {
+                this.runRecognition();
+            } else {
+                this.stopRecognition();
+                this.setState({
+                    isOpenLeftSideBar: false,
+                });
+
+                this.handleRecognitionSettingUpdate('debugMode', false);
+            }
+        }
+
+        if (!isEqual(debugMode, prevState.recognitionSettings.debugMode)) {
+            this.reRunRecognition();
+        }
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return !(isEqual(this.props, nextProps) && isEqual(this.state, nextState));
+    async runRecognition() {
+        try {
+            const net = await handpose.load();
+            const {
+                detectInterval,
+                debugDetectInterval,
+                debugMode,
+            } = this.state.recognitionSettings;
+
+            this.recognitionInterval = setInterval(() => {
+                this.detect(net);
+            }, debugMode ? debugDetectInterval : detectInterval);
+        } catch (e) {
+            console.log('detectionError');
+        }
+    }
+
+    stopRecognition() {
+        clearInterval(this.recognitionInterval);
+        this.recognitionInterval = null;
+    }
+
+    reRunRecognition = () => {
+        this.stopRecognition();
+        this.runRecognition();
     }
 
     detect = async (net) => {
@@ -91,8 +145,8 @@ class App extends Component {
             this.webcamRef.current !== null &&
             this.webcamRef.current.video.readyState === 4
         ) {
-            // const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             const video = this.webcamRef.current.video;
+            const { debugMode } = this.state.recognitionSettings;
 
             // Make Detections
             const hand = await net.estimateHands(video);
@@ -108,8 +162,12 @@ class App extends Component {
                     oneFingerDown,
                     twoFingerUp,
                     twoFingerDown,
+                    cornerGesture,
                 ]);
-                const result = await GE.estimate(hand[0].landmarks, debugMode ? 1 : 7.5);
+                const result = await GE.estimate(
+                    hand[0].landmarks,
+                    debugMode ? defaultRecognitionSettings.debugConfidence : defaultRecognitionSettings.confidence
+                );
 
                 if (result.gestures !== undefined && result.gestures.length > 0) {
                     const confidence = result.gestures.map(prediction => prediction.confidence);
@@ -279,11 +337,35 @@ class App extends Component {
         this.setState(({ isOpenLeftSideBar }) => ({ isOpenLeftSideBar: !isOpenLeftSideBar }))
     }
 
+    toggleRecognitionMode = () => {
+        this.setState(({ recognitionMode }) => ({ recognitionMode: !recognitionMode }))
+    }
+
+    toggleDebugMode = () => {
+        this.handleRecognitionSettingUpdate('debugMode', !this.state.recognitionSettings.debugMode)
+    }
+
+    handleRecognitionSettingUpdate = (field, value) => {
+        if (field) {
+            this.setState({
+                recognitionSettings: {
+                    ...this.state.recognitionSettings,
+                    [field]: value,
+                }
+            });
+            RecognitionSettings.updateSetting(field, value);
+        }
+    }
+
     onReady = (event) => {
         console.log(event.target);
         console.log(event.target.getOptions());
         this.playerRef = event.target;
     };
+
+    onWebCamError = () => {
+        console.log('WebCamError');
+    }
 
     render() {
         const {
@@ -292,6 +374,8 @@ class App extends Component {
             videos,
             activeVideoIndex,
             isOpenLeftSideBar,
+            recognitionMode,
+            recognitionSettings,
         } = this.state;
 
         return (
@@ -302,9 +386,16 @@ class App extends Component {
             >
                 <LeftSideBar
                     toggle={this.toggleLeftSideBarModal}
+                    isOpen={isOpenLeftSideBar}
+                    toggleRecognitionMode={this.toggleRecognitionMode}
+                    recognitionMode={recognitionMode}
+                    toggleDebugMode={this.toggleDebugMode}
                     webcamRef={this.webcamRef}
                     result={result}
-                    isOpen={isOpenLeftSideBar}
+                    onWebCamError={this.onWebCamError}
+                    handleRecognitionSettingUpdate={this.handleRecognitionSettingUpdate}
+                    recognitionSettings={recognitionSettings}
+                    onChangeComplete={this.reRunRecognition}
                 />
 
                 <div className="content">

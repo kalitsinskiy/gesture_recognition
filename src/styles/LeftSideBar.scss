@@ -60,9 +60,6 @@
 
         button {
           margin-bottom: $medium-length-third;
-          border: none;
-          outline: none;
-          padding: 0;
 
           &:last-child {
             margin-bottom: 0;
@@ -89,16 +86,15 @@
 
             span:nth-child(2) {
               transform: rotateZ(45deg);
-              //position: relative;
+              background-color: $red;
 
               &:before {
                 content: "";
                 position: absolute;
-                //transform: rotateZ(-45deg);
                 width: 100%;
                 height: 4px;
                 border-radius: 5px;
-                background-color: $white;
+                background-color: $red;
 
                 transform: rotateZ(-90deg);
                 top: 0;
@@ -108,7 +104,6 @@
           }
 
           span {
-            //position: relative;
             width: 100%;
             height: 4px;
             border-radius: 5px;
@@ -125,12 +120,24 @@
           }
         }
 
-        .rec_mode {
+        .rec_mode, .debug_mode {
           height: $medium-length-third;
           width: $medium-length-third;
 
-          img {
+          &.active {
+            svg {
+              path {
+                fill: $red;
+              }
+            }
+          }
+
+          svg {
             width: 100%;
+            height: 100%;
+            path {
+              fill: $white;
+            }
           }
         }
       }
@@ -150,6 +157,22 @@
   .hidden-side {
     width: $open-left-sidebar-width - $left-sidebar-width;
     height: 100%;
+
+    .setting-wrap {
+      padding: $medium-length-first $medium-length-third;
+
+      &__title {
+        font-size: $medium-length-second;
+        color: $dark-lighten;
+        margin-bottom: $medium-length-first;
+      }
+
+      &:last-child {
+        &__title {
+          margin-bottom: 0;
+        }
+      }
+    }
   }
 }
 

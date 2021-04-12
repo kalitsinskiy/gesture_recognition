@@ -29,8 +29,37 @@ body {
   }
 }
 
-.btn-bg {
-  box-shadow: 0 0 0 6px $dark-darken !important;
-  background-color: $dark-darken !important;
-  border-radius: 50%;
+button {
+  border: none;
+  outline: none;
+  padding: 0;
+  background: none;
+  transition: opacity $transition;
+
+  &:disabled {
+    opacity: 0.5;
+    //pointer-events: none;
+    cursor: not-allowed !important;
+  }
+
+  &.btn-bg {
+    box-shadow: 0 0 0 6px $dark-darken !important;
+    background-color: $dark-darken !important;
+    border-radius: 50%;
+  }
+}
+
+.input-range {
+  &__track {
+    &--active {
+      background: $main-primary;
+    }
+  }
+
+  &__slider-container {
+    .input-range__slider {
+      background: $main-primary;
+      border: 1px solid $main-primary;
+    }
+  }
 }

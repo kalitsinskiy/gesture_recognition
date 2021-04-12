@@ -103,40 +103,6 @@
   },
   {
     "kind": "youtube#searchResult",
-    "etag": "bAP2tm7bBB6qMPTKpNrKIVQs4Pg",
-    "id": {
-      "kind": "youtube#video",
-      "videoId": "TZqFokYyluw"
-    },
-    "snippet": {
-      "publishedAt": "2018-01-27T11:00:02Z",
-      "channelId": "UC4rlAVgAK0SGk-yTfe48Qpw",
-      "title": "20 Interesting Facts You&#39;re Too Lazy to Google",
-      "description": "Why is the sky blue? Why aren't there any more dinosaurs? Why do trees change colors? If you've been around kids long enough, you know the incessant ...",
-      "thumbnails": {
-        "default": {
-          "url": "https://i.ytimg.com/vi/TZqFokYyluw/default.jpg",
-          "width": 120,
-          "height": 90
-        },
-        "medium": {
-          "url": "https://i.ytimg.com/vi/TZqFokYyluw/mqdefault.jpg",
-          "width": 320,
-          "height": 180
-        },
-        "high": {
-          "url": "https://i.ytimg.com/vi/TZqFokYyluw/hqdefault.jpg",
-          "width": 480,
-          "height": 360
-        }
-      },
-      "channelTitle": "BRIGHT SIDE",
-      "liveBroadcastContent": "none",
-      "publishTime": "2018-01-27T11:00:02Z"
-    }
-  },
-  {
-    "kind": "youtube#searchResult",
     "etag": "tMD6Hb8H1CJTmsDAxn4ix3MmRaQ",
     "id": {
       "kind": "youtube#video",
@@ -167,40 +133,6 @@
       "channelTitle": "123 GO! Live",
       "liveBroadcastContent": "none",
       "publishTime": "2020-09-29T15:15:01Z"
-    }
-  },
-  {
-    "kind": "youtube#searchResult",
-    "etag": "tcr6WSbEcC30bhzpIY4HYCsGdg8",
-    "id": {
-      "kind": "youtube#video",
-      "videoId": "GhOF-rSDArQ"
-    },
-    "snippet": {
-      "publishedAt": "2020-11-14T06:00:06Z",
-      "channelId": "UCJplp5SjeGSdVdwsfb9Q7lQ",
-      "title": "Nastya and dad got into a mysterious test",
-      "description": "Nastya must find a key to open her dad, who is sitting in a mysterious house. Subscribe to Like Nastya - https://is.gd/gdv8uX ...",
-      "thumbnails": {
-        "default": {
-          "url": "https://i.ytimg.com/vi/GhOF-rSDArQ/default.jpg",
-          "width": 120,
-          "height": 90
-        },
-        "medium": {
-          "url": "https://i.ytimg.com/vi/GhOF-rSDArQ/mqdefault.jpg",
-          "width": 320,
-          "height": 180
-        },
-        "high": {
-          "url": "https://i.ytimg.com/vi/GhOF-rSDArQ/hqdefault.jpg",
-          "width": 480,
-          "height": 360
-        }
-      },
-      "channelTitle": "Like Nastya",
-      "liveBroadcastContent": "none",
-      "publishTime": "2020-11-14T06:00:06Z"
     }
   },
   {

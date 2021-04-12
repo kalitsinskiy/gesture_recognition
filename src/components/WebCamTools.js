@@ -4,7 +4,7 @@ import Webcam from "react-webcam";
 import drawHand from "../utils/drawHand";
 
 
-const WebCamTools = ({ webcamRef, result }) => {
+const WebCamTools = ({ webcamRef, result, onError }) => {
     const canvasRef = useRef(null);
     const wrapperRef = useRef(null);
 
@@ -32,9 +32,10 @@ const WebCamTools = ({ webcamRef, result }) => {
             <Webcam
                 ref={webcamRef}
                 className="webcam"
-                // onUserMedia={() => {
-                //     console.log('onUserMedia');
-                // }}
+                onUserMedia={() => {
+                    console.log('onUserMedia');
+                }}
+                onUserMediaError={onError}
                 videoConstraints={{
                     width: 'auto',
                     height: 'auto',
