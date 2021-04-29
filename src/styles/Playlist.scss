@@ -48,7 +48,7 @@
           font-size: $small-length-third;
           color: $font-secondary;
 
-          &.channel {
+          &.channel, &.published {
             display: inline-block;
             max-width: 100%;
             overflow: hidden;

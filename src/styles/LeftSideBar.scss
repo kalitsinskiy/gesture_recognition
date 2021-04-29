@@ -11,6 +11,7 @@
   .top {
     width: 100%;
     height: $header-height;
+    min-height: $header-height;
     flex: 0;
     display: flex;
 

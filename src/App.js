@@ -10,6 +10,7 @@ import VideoList from './components/VideoList';
 import VideoDetail from './components/VideoDetail';
 import Header from './components/Header';
 import LeftSideBar from './components/LeftSideBar';
+import ErrorNotificationPopup from './components/ErrorNotificationPopup';
 
 import RecognitionSettings, { defaultRecognitionSettings } from './utils/RecognitionSettings';
 
@@ -52,6 +53,11 @@ class App extends PureComponent {
             activeVideoIndex: null,
             isPlayerOpen: false,
             isOpenLeftSideBar: false,
+            errorModal: {
+                isOpen: false,
+                title: null,
+                message: null,
+            },
         }
         this.webcamRef = createRef();
         this.playerRef = null;
@@ -125,7 +131,13 @@ class App extends PureComponent {
                 this.detect(net);
             }, debugMode ? debugDetectInterval : detectInterval);
         } catch (e) {
-            console.log('detectionError');
+            this.setState({
+                errorModal: {
+                    isOpen: true,
+                    title: "Recognition Error",
+                    message: "Something went wrong with recognition, check your connection and try reload the page",
+                }
+            })
         }
     }
 
@@ -329,10 +341,6 @@ class App extends PureComponent {
         }
     }
 
-    togglePlayerModal = () => {
-        this.setState(({ isPlayerOpen }) => ({ isPlayerOpen: !isPlayerOpen }))
-    }
-
     toggleLeftSideBarModal = () => {
         this.setState(({ isOpenLeftSideBar }) => ({ isOpenLeftSideBar: !isOpenLeftSideBar }))
     }
@@ -357,14 +365,44 @@ class App extends PureComponent {
         }
     }
 
+    errorModalToggle = () => {
+        const { isOpen, title, message } = this.state.errorModal;
+
+        const nextState = !isOpen;
+
+        this.setState({
+            errorModal: {
+                isOpen: nextState,
+                title: !nextState ? null : title,
+                message: !nextState ? null : message,
+            }
+        })
+    }
+
     onReady = (event) => {
-        console.log(event.target);
-        console.log(event.target.getOptions());
+        // console.log(event.target);
+        // console.log(event.target.getOptions());
         this.playerRef = event.target;
     };
 
     onWebCamError = () => {
-        console.log('WebCamError');
+        this.setState({
+            errorModal: {
+                isOpen: true,
+                title: "WebCam Error",
+                message: "WebCam is not connected or site does not have permission to it",
+            }
+        })
+    }
+
+    onVideoError = () => {
+        this.setState({
+            errorModal: {
+                isOpen: true,
+                title: "Player Error",
+                message: "Something went wrong with video player, reload the page or try again later",
+            }
+        })
     }
 
     render() {
@@ -376,7 +414,10 @@ class App extends PureComponent {
             isOpenLeftSideBar,
             recognitionMode,
             recognitionSettings,
+            errorModal,
         } = this.state;
+
+        const {isOpen, title, message } = errorModal;
 
         return (
             <div
@@ -402,7 +443,11 @@ class App extends PureComponent {
                     <Header onSearch={this.handleSubmit}/>
 
                     <div className='playlist'>
-                        {selectedVideo ? <VideoDetail video={selectedVideo} onReady={this.onReady}/> : null}
+                        {selectedVideo ? <VideoDetail
+                            video={selectedVideo}
+                            onReady={this.onReady}
+                            onError={this.onVideoError}
+                        /> : null}
 
                         <VideoList
                             handleVideoSelect={this.handleVideoSelect}
@@ -411,6 +456,13 @@ class App extends PureComponent {
                         />
                     </div>
                 </div>
+
+                <ErrorNotificationPopup
+                    isOpen={isOpen}
+                    toggle={this.errorModalToggle}
+                    title={title}
+                    message={message}
+                />
             </div>
         );
     }
