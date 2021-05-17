@@ -12,7 +12,7 @@ import Header from './components/Header';
 import LeftSideBar from './components/LeftSideBar';
 import ErrorNotificationPopup from './components/ErrorNotificationPopup';
 
-import RecognitionSettings, { defaultRecognitionSettings } from './utils/RecognitionSettings';
+import RecognitionSettings from './utils/RecognitionSettings';
 
 import youtube from './apis/youtube';
 
@@ -89,7 +89,7 @@ class App extends PureComponent {
             if (detectionResult.gesture) {
                 clearTimeout(this.confirmTimer);
                 this.confirmTimer = setTimeout(() => {
-                    console.log('confirm gesture', detectionResult.gesture);
+                    if (debugMode) console.log('confirm gesture', detectionResult.gesture);
                     this.handleGestureSubmit(detectionResult.gesture);
                     this.setState({ detectionResult: initialDetectionState });
                 }, debugMode ? debugConfirmTime : confirmTime);
@@ -157,7 +157,11 @@ class App extends PureComponent {
             this.webcamRef.current.video.readyState === 4
         ) {
             const video = this.webcamRef.current.video;
-            const { debugMode } = this.state.recognitionSettings;
+            const {
+                debugMode,
+                confidence,
+                debugConfidence,
+            } = this.state.recognitionSettings;
 
             // Make Detections
             const hand = await net.estimateHands(video);
@@ -174,10 +178,7 @@ class App extends PureComponent {
                     twoFingerUp,
                     twoFingerDown,
                 ]);
-                const result = await GE.estimate(
-                    hand[0].landmarks,
-                    debugMode ? defaultRecognitionSettings.debugConfidence : defaultRecognitionSettings.confidence
-                );
+                const result = await GE.estimate(hand[0].landmarks, debugMode ? debugConfidence : confidence);
 
                 if (result.gestures !== undefined && result.gestures.length > 0) {
                     const confidence = result.gestures.map(prediction => prediction.confidence);

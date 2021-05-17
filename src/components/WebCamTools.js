@@ -32,9 +32,6 @@ const WebCamTools = ({ webcamRef, result, onError }) => {
             <Webcam
                 ref={webcamRef}
                 className="webcam"
-                onUserMedia={() => {
-                    console.log('onUserMedia');
-                }}
                 onUserMediaError={onError}
                 videoConstraints={{
                     width: 'auto',
