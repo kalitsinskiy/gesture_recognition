@@ -63,3 +63,37 @@ button {
     }
   }
 }
+
+
+.instruction-tooltip {
+  &.show {
+    opacity: 1;
+  }
+
+  .tooltip-inner {
+    max-width: initial;
+    padding: $small-length-second;
+
+    .title {
+      margin-bottom: $medium-length-first;
+    }
+
+    .gesture_wrapper {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: $medium-length-first;
+
+      .gesture {
+        width: 130px;
+
+        &__img {
+          width: 40px;
+        }
+
+        &__description {
+          margin: 0;
+        }
+      }
+    }
+  }
+}

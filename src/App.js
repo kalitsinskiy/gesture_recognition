@@ -30,7 +30,6 @@ const {
     twoFingerUp,
     oneFingerDown,
     twoFingerDown,
-    cornerGesture,
 } = gestures;
 
 const initialDetectionState = {
@@ -174,7 +173,6 @@ class App extends PureComponent {
                     oneFingerDown,
                     twoFingerUp,
                     twoFingerDown,
-                    cornerGesture,
                 ]);
                 const result = await GE.estimate(
                     hand[0].landmarks,

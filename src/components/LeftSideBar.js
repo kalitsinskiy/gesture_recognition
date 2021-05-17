@@ -5,6 +5,8 @@ import InputRange from 'react-input-range';
 import WebCamTools from "./WebCamTools";
 import WebCamIcon from "./WebCamIcon";
 import DebugIcon from "./DebugIcon";
+import InfoIcon from "./InfoIcon";
+import InstructionTooltip from "./InstructionTooltip";
 
 const LeftSideBar = props => {
     const {
@@ -71,15 +73,11 @@ const LeftSideBar = props => {
                             <WebCamIcon />
                         </button>
 
-                        <button
-                            className={classNames('debug_mode btn-bg', {
-                                'active': debugMode,
-                            })}
-                            disabled={!recognitionMode}
-                            onClick={toggleDebugMode}
-                        >
-                            <DebugIcon />
+                        <button className="info btn-bg" id="instruction-btn">
+                            <InfoIcon />
                         </button>
+
+                        <InstructionTooltip target="instruction-btn"/>
                     </div>
                 </div>
 
@@ -94,6 +92,16 @@ const LeftSideBar = props => {
 
                             <div className="setting-wrap">
                                 <h5 className="setting-wrap__title">Camera FPS</h5>
+
+                                <button
+                                    className={classNames('debug_mode', {
+                                        'active': debugMode,
+                                    })}
+                                    disabled={!recognitionMode}
+                                    onClick={toggleDebugMode}
+                                >
+                                    <DebugIcon />
+                                </button>
 
                                 <InputRange
                                     maxValue={60}

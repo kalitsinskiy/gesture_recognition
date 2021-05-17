@@ -121,7 +121,7 @@
           }
         }
 
-        .rec_mode, .debug_mode {
+        .rec_mode, .info {
           height: $medium-length-third;
           width: $medium-length-third;
 
@@ -160,12 +160,37 @@
     height: 100%;
 
     .setting-wrap {
+      position: relative;
       padding: $medium-length-first $medium-length-third;
 
       &__title {
         font-size: $medium-length-second;
         color: $dark-lighten;
         margin-bottom: $medium-length-first;
+      }
+
+      .debug_mode {
+        right: 22px;
+        height: 1.75rem;
+        width: 1.75rem;
+        position: absolute;
+        top: 12px;
+
+        &.active {
+          svg {
+            path {
+              fill: $red;
+            }
+          }
+        }
+
+        svg {
+          width: 100%;
+          height: 100%;
+          path {
+            fill: $main-dark;
+          }
+        }
       }
 
       &:last-child {

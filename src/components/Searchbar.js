@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 import searchIcon from '../assets/search.svg'
-// import microphoneIcon from '../assets/microphone.svg'
 
 const Searchbar = ({ onSearch }) => {
     const [searchText, setSearchText] = useState('');

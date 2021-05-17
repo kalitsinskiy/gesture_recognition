@@ -6,7 +6,7 @@ const ErrorNotificationPopup = ({isOpen, toggle, title, message}) => (
         isOpen={isOpen}
         toggle={toggle}
         centered
-        modalTransition={{ enter: 200, exit: 0 }}
+        modalTransition={{ timeout: 50 }}
     >
         <ModalHeader toggle={toggle}>{title}</ModalHeader>
 
