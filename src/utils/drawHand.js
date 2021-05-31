@@ -39,8 +39,12 @@ const style = {
     20: fingerBonePoint,
 };
 
+const staticHeight = 340;
+
 // Drawing function
 const drawHand = (predictions, ctx) => {
+    const ctxHeight = ctx?.canvas?.height;
+
     // Check if we have predictions
     if (predictions.length > 0) {
         // Loop through each prediction
@@ -81,7 +85,9 @@ const drawHand = (predictions, ctx) => {
                 const y = landmarks[i][1];
                 // Start drawing
                 ctx.beginPath();
-                ctx.arc(x, y, style[i]["size"], 0, 3 * Math.PI);
+                const size = style[i]["size"];
+                const responsiveSize = ctxHeight ? (ctxHeight / staticHeight) * size : size
+                ctx.arc(x, y, responsiveSize, 0, 3 * Math.PI);
 
                 // Set line color
                 ctx.fillStyle = style[i]["color"];

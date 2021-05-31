@@ -86,3 +86,9 @@
     }
   }
 }
+
+@media (max-width: 1300px) {
+  .playlist {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
