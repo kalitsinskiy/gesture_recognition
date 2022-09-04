@@ -44,7 +44,7 @@ const LeftSideBar = props => {
 
                 <div className="hidden-side">
                     <div className="logo-text">
-                        Hands Pose
+                        Hand Pose
                     </div>
                 </div>
             </div>
@@ -105,7 +105,7 @@ const LeftSideBar = props => {
 
                                 <InputRange
                                     maxValue={60}
-                                    minValue={0}
+                                    minValue={1}
                                     value={Math.ceil(1000 / detectInterval)}
                                     onChange={value => {
                                         handleRecognitionSettingUpdate('detectInterval', Math.ceil(1000 / value))
@@ -149,7 +149,7 @@ const LeftSideBar = props => {
 
                                 <InputRange
                                     maxValue={20}
-                                    minValue={0}
+                                    minValue={1}
                                     value={Math.ceil(1000 / debugDetectInterval)}
                                     onChange={value => {
                                         handleRecognitionSettingUpdate('debugDetectInterval', Math.ceil(1000 / value))

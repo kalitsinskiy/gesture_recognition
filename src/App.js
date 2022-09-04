@@ -181,10 +181,10 @@ class App extends PureComponent {
                 const result = await GE.estimate(hand[0].landmarks, debugMode ? debugConfidence : confidence);
 
                 if (result.gestures !== undefined && result.gestures.length > 0) {
-                    const confidence = result.gestures.map(prediction => prediction.confidence);
+                    const confidence = result.gestures.map(prediction => prediction.score);
                     if (debugMode) {
-                        result.gestures.forEach(({confidence, name}) => {
-                            console.log('confidence', name, confidence);
+                        result.gestures.forEach(({score, name}) => {
+                            console.log('score', name, score);
                         });
                         result.poseData.forEach(item => console.log(item.join(', ')));
                         console.log('---------------------------------------');
