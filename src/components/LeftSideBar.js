@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react';
 import classNames from 'classnames';
 import InputRange from 'react-input-range';
+import _ from 'lodash';
 
-import WebCamTools from "./WebCamTools";
+// import WebCamTools from "./WebCamTools";
 import WebCamIcon from "./WebCamIcon";
 import DebugIcon from "./DebugIcon";
 import InfoIcon from "./InfoIcon";
@@ -11,13 +12,14 @@ import InstructionTooltip from "./InstructionTooltip";
 const LeftSideBar = props => {
     const {
         toggle,
-        webcamRef,
-        result,
+        // webcamRef,
+        liveVideoRef,
+        // result,
         isOpen,
         toggleRecognitionMode,
         recognitionMode,
         toggleDebugMode,
-        onWebCamError,
+        // onWebCamError,
         handleRecognitionSettingUpdate,
         recognitionSettings,
         onChangeComplete,
@@ -82,13 +84,14 @@ const LeftSideBar = props => {
                 </div>
 
                 <div className="hidden-side">
-                    {recognitionMode && (
+                    {recognitionMode && !_.isEmpty(recognitionSettings) && (
                         <Fragment>
-                            <WebCamTools
-                                webcamRef={webcamRef}
-                                result={result}
-                                onError={onWebCamError}
-                            />
+                            {/*<WebCamTools*/}
+                            {/*    webcamRef={webcamRef}*/}
+                            {/*    result={result}*/}
+                            {/*    onError={onWebCamError}*/}
+                            {/*/>*/}
+                            <div className="web-cam_tools" ref={liveVideoRef} />
 
                             <div className="setting-wrap">
                                 <h5 className="setting-wrap__title">Camera FPS</h5>
@@ -97,13 +100,15 @@ const LeftSideBar = props => {
                                     className={classNames('debug_mode', {
                                         'active': debugMode,
                                     })}
-                                    disabled={!recognitionMode}
+                                    // disabled={!recognitionMode}
+                                    disabled // TODO
                                     onClick={toggleDebugMode}
                                 >
                                     <DebugIcon />
                                 </button>
 
                                 <InputRange
+                                    disabled // TODO
                                     maxValue={60}
                                     minValue={1}
                                     value={Math.ceil(1000 / detectInterval)}
@@ -118,6 +123,7 @@ const LeftSideBar = props => {
                                 <h5 className="setting-wrap__title">Confirm Time(s)</h5>
 
                                 <InputRange
+                                    disabled
                                     maxValue={5}
                                     minValue={1}
                                     step={0.5}
@@ -133,6 +139,7 @@ const LeftSideBar = props => {
                                 <h5 className="setting-wrap__title">Confidence</h5>
 
                                 <InputRange
+                                    disabled
                                     maxValue={10}
                                     minValue={1}
                                     step={0.5}
@@ -148,6 +155,7 @@ const LeftSideBar = props => {
                                 <h5 className="setting-wrap__title">Debug FPS</h5>
 
                                 <InputRange
+                                    disabled
                                     maxValue={20}
                                     minValue={1}
                                     value={Math.ceil(1000 / debugDetectInterval)}
@@ -162,6 +170,7 @@ const LeftSideBar = props => {
                                 <h5 className="setting-wrap__title">Debug Confirm Time(s)</h5>
 
                                 <InputRange
+                                    disabled
                                     maxValue={5}
                                     minValue={1}
                                     step={0.5}
@@ -177,6 +186,7 @@ const LeftSideBar = props => {
                                 <h5 className="setting-wrap__title">Debug Confidence</h5>
 
                                 <InputRange
+                                    disabled
                                     maxValue={10}
                                     minValue={1}
                                     step={0.5}

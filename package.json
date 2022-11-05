@@ -1,10 +1,12 @@
 {
   "name": "handpose",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@tensorflow-models/handpose": "0.0.7",
-    "@tensorflow/tfjs": "3.20.0",
+    "@mediapipe/hands": "0.4.1646424915",
+    "@tensorflow-models/hand-pose-detection": "^2.0.0",
+    "@tensorflow/tfjs-converter": "4.0.0",
+    "@tensorflow/tfjs-core": "4.0.0",
     "axios": "0.21.1",
     "bootstrap": "4.6.0",
     "classnames": "2.2.6",

@@ -13,22 +13,22 @@ import two_finger_down from "../assets/gestures/two_finger_down.png";
 
 const gestures = [
     {
-        id:'high_five',
-        src: high_five,
-        description: 'Start/Pause video',
-    },{
-        id:'ok',
-        src: ok,
-        description: 'Run selected video',
-    },{
-        id:'left',
+        id: 'left',
         src: left,
         description: 'Select prev video in the list',
-    },{
-        id:'right',
+    }, {
+        id: 'right',
         src: right,
         description: 'Select next video in the list',
-    },{
+    }, {
+        id: 'ok',
+        src: ok,
+        description: 'Run selected video',
+    }, {
+        id: 'high_five',
+        src: high_five,
+        description: 'Start/Pause video',
+    }, {
         id:'one_finger_up',
         src: one_finger_up,
         description: 'Volume +',
