@@ -20,7 +20,7 @@
     "react-scripts": "3.4.3",
     "react-webcam": "5.2.0",
     "react-youtube": "7.13.1",
-    "reactstrap": "8.9.0"
+    "reactstrap": "9.1.5"
   },
   "scripts": {
     "start": "react-scripts start",

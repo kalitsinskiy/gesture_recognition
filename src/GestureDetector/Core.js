@@ -34,7 +34,7 @@ class Core {
         this.recognitionSettings = RecognitionSettings.getSettings();
 
         this.camera = null;
-        this.obseringRecognition = false;
+        this.observingRecognition = false;
     }
 
     async createDetector(){
@@ -49,22 +49,21 @@ class Core {
     }
 
     startObservingRecognition() {
-        this.obseringRecognition = true;
+        this.observingRecognition = true;
         return this.camera.returnLiveDetection();
     }
 
     stopObservingRecognition() {
-        this.obseringRecognition = false;
+        this.observingRecognition = false;
         this.camera.clearCtx();
     }
 
     async start() {
-        this.camera = await WebCamera.setupCamera(
-            {targetFPS: 60, sizeOption: '640 X 480'},
-            this.onWebCamError
-        );
-
         try {
+            this.camera = await WebCamera.setupCamera(
+                {targetFPS: 60, sizeOption: '640 X 480'},
+                this.onWebCamError
+            );
             await this.createDetector();
             this.gestureEstimator = new fp.GestureEstimator([
                 highFiveGesture,
@@ -81,8 +80,6 @@ class Core {
             // this.recognitionInterval = setInterval(() => {
             //     this.detect();
             // }, debugMode ? debugDetectInterval : detectInterval);
-
-            return this.stop;
         } catch (e) {
             throw new Error({
                 isOpen: true,
@@ -99,7 +96,7 @@ class Core {
 
     stop() {
         window.cancelAnimationFrame(this.rafId);
-        // this.stopObservingRecognition();
+        this.stopObservingRecognition();
 
         // this.detector.dispose();
 
@@ -157,7 +154,7 @@ class Core {
                 this.confirmGesture(null);
             }
 
-            if (this.obseringRecognition) {
+            if (this.observingRecognition) {
                 this.camera.setHands(originalEstimation);
             }
         }
@@ -197,6 +194,10 @@ class Core {
         };
         RecognitionSettings.updateSetting(field, value);
         // this.reRunRecognition();
+    }
+
+    setHandleGestureSubmit(newHandleGestureSubmit) {
+        this.handleGestureSubmit = newHandleGestureSubmit;
     }
 }
 

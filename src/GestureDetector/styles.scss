@@ -1,0 +1,92 @@
+@import "./src/styles/variables";
+
+.panel {
+  width: 350px;
+  position: fixed;
+  left: 70px;
+  top: 10px;
+  padding: 10px;
+  background: white;
+
+  .accordion-header {
+    text-align: center;
+  }
+
+  .accordion-button {
+    color: black;
+  }
+
+  .accordion-body {
+    position: relative;
+    min-height: 100px;
+  }
+
+  .full_wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    background: white;
+    z-index: 1;
+
+    div {
+      color: #8739f9 !important;
+      span {
+        display: none;
+      }
+    }
+  }
+
+  .not_loaded {
+    color: red;
+  }
+
+  .setting-wrap {
+    position: relative;
+    padding: $medium-length-first $medium-length-third;
+
+    &__title {
+      font-size: $medium-length-second;
+      color: $dark-lighten;
+      margin-bottom: $medium-length-first;
+    }
+
+    .debug_mode {
+      right: 22px;
+      height: 1.75rem;
+      width: 1.75rem;
+      position: absolute;
+      top: 12px;
+
+      &.active {
+        svg {
+          path {
+            fill: $red;
+          }
+        }
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
+        path {
+          fill: $main-dark;
+        }
+      }
+    }
+
+    &:last-child {
+      &__title {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  canvas {
+    width: 100%;
+  }
+}

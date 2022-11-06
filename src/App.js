@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { isEmpty, isNumber } from "lodash";
-import classNames from "classnames";
 
 import VideoList from './components/VideoList';
 import VideoDetail from './components/VideoDetail';
@@ -8,7 +7,7 @@ import Header from './components/Header';
 import LeftSideBar from './components/LeftSideBar';
 import ErrorNotificationPopup from './components/ErrorNotificationPopup';
 
-import GestureDetector from './GestureDetector';
+import GestureDetector from './GestureDetector/GestureDetector';
 
 import youtube from './apis/youtube';
 
@@ -34,61 +33,19 @@ const rewindStep = 10;
 
 const App = () => {
     const [recognitionMode, setRecognitionMode] = useState(false);
-    const [recognitionSettings, setRecognitionSettings] = useState({});
     const [videos, setVideos] = useState(initialPlayList);
     const [selectedVideo, setSelectedVideo] = useState(null);
     const [activeVideoIndex, setActiveVideoIndex] = useState(null);
-    const [isOpenLeftSideBar, setLeftSideBarVisibility] = useState(false);
     const [errorModal, setErrorModal] = useState({
         isOpen: false,
         title: null,
         message: null,
     });
     const playerRef = useRef();
-    const gestureDetector = useRef();
-    const unsubscribe = useRef();
-
-    const videosRef = useRef();
-    const activeVideoIndexRef = useRef();
-
-    const liveVideoRef = useRef(null);
-
-    useEffect(() => {
-        videosRef.current = videos;
-    }, [videos]);
-
-    useEffect(() => {
-        activeVideoIndexRef.current = activeVideoIndex;
-    }, [activeVideoIndex]);
 
     const {isOpen, title, message } = errorModal;
 
-    const runRecognition = async () => {
-        const coreDetector = new GestureDetector({
-            handleGestureSubmit,
-            onWebCamError,
-        });
-        const stop = await coreDetector.start();
-        const video = coreDetector.startObservingRecognition();
-        const recognitionSettings = coreDetector.getRecognitionSettings();
-
-        setRecognitionSettings(recognitionSettings);
-        liveVideoRef.current.appendChild(video);
-
-        gestureDetector.current = coreDetector;
-        unsubscribe.current = stop;
-    }
-
-    const stopRecognition = () => {
-        unsubscribe.current();
-        gestureDetector.current = null;
-    }
-
-    const reRunRecognition = () => {
-        gestureDetector.current.reRunRecognition();
-    }
-
-    const handleGestureSubmit = (gesture = null) => {
+    const handleGestureSubmit = useCallback((gesture = null) => {
         switch (gesture){
             // Start/Pause
             case(highFiveGesture.name): {
@@ -105,8 +62,8 @@ const App = () => {
             }
             // Confirm
             case(okGesture.name): {
-                if (!isEmpty(videosRef.current)) {
-                    const selectedVideo = videosRef.current[activeVideoIndexRef.current];
+                if (!isEmpty(videos)) {
+                    const selectedVideo = videos[activeVideoIndex];
 
                     setSelectedVideo(selectedVideo);
                 }
@@ -123,10 +80,10 @@ const App = () => {
             }
             // Select next/prev
             case(rightGesture.name): {
-                if (!isEmpty(videosRef.current)) {
+                if (!isEmpty(videos)) {
                     setActiveVideoIndex(activeVideoIndex => {
                         if (isNumber(activeVideoIndex)) {
-                            if (activeVideoIndex < (videosRef.current.length - 1)) {
+                            if (activeVideoIndex < (videos.length - 1)) {
                                 return activeVideoIndex + 1;
                             }
                             return activeVideoIndex;
@@ -137,7 +94,7 @@ const App = () => {
                 break;
             }
             case(leftGesture.name): {
-                if (!isEmpty(videosRef.current)) {
+                if (!isEmpty(videos)) {
                     setActiveVideoIndex(activeVideoIndex => {
                         if (isNumber(activeVideoIndex)) {
                             if (activeVideoIndex > 0) {
@@ -188,109 +145,73 @@ const App = () => {
                 break;
             }
         }
-    }
+    }, [activeVideoIndex, videos]);
 
-    const handleSubmit = async (termFromSearchBar) => {
+    const handleSubmit = useCallback(async (termFromSearchBar) => {
         const response = await youtube.get('/search', {
             params: {
                 q: termFromSearchBar
             }
         })
         setVideos(response.data.items);
-    };
+    }, []);
 
-    const handleVideoSelect = (index) => {
+    const handleVideoSelect = useCallback((index) => {
         if (!isEmpty(videos)) {
             setSelectedVideo(videos[index]);
             setActiveVideoIndex(index);
         }
-    }
+    }, [videos]);
 
-    const toggleLeftSideBarModal = () => {
-        setLeftSideBarVisibility(currentState => !currentState);
-    }
+    const toggleRecognitionMode = useCallback(()=> {
+        setRecognitionMode(state => !state);
+    }, []);
 
-    const toggleRecognitionMode = () => {
-        const newState = !recognitionMode;
+    const errorModalToggle = useCallback(() => {
+        setErrorModal(isOpen => {
+            const nextState = !isOpen;
 
-        setRecognitionMode(newState);
-        if (newState) {
-            runRecognition();
-        } else {
-            stopRecognition();
-            setLeftSideBarVisibility(false);
-
-            handleRecognitionSettingUpdate('debugMode', false);
-        }
-    }
-
-    const toggleDebugMode = () => {
-        handleRecognitionSettingUpdate('debugMode', !recognitionSettings.debugMode);
-        reRunRecognition();
-    }
-
-    const handleRecognitionSettingUpdate = (field, value) => {
-        if (field) {
-            gestureDetector.current.updateSetting(field, value);
-            setRecognitionSettings(currentState => ({
-                ...currentState,
-                [field]: value,
-            }))
-        }
-    }
-
-    const errorModalToggle = () => {
-        const nextState = !isOpen;
-
-        setErrorModal({
-            isOpen: nextState,
-            title: !nextState ? null : title,
-            message: !nextState ? null : message,
+            return {
+                isOpen: nextState,
+                title: !nextState ? null : title,
+                message: !nextState ? null : message,
+            }
         });
-    }
+    }, [message, title])
 
-    const onReady = (event) => {
+    const onReady = useCallback((event) => {
         playerRef.current = event.target;
-    };
+    }, []);
 
-    const onWebCamError = () => {
-        setErrorModal({
-            isOpen: true,
-            title: "WebCam Error",
-            message: "WebCam is not connected or site does not have permission to it",
-        });
-    }
+    // const onWebCamError = () => {
+    //     setErrorModal({
+    //         isOpen: true,
+    //         title: "WebCam Error",
+    //         message: "WebCam is not connected or site does not have permission to it",
+    //     });
+    // }
 
-    const onVideoError = () => {
+    const onVideoError = useCallback(() => {
         setErrorModal({
             isOpen: true,
             title: "Player Error",
             message: "Something went wrong with video player, reload the page or try again later",
         });
-    }
+    }, []);
 
     return (
-        <div
-            className={classNames('main-wrapper', {
-                'open-left-side-bar': isOpenLeftSideBar,
-            })}
-        >
+        <div className="main-wrapper">
             <LeftSideBar
-                toggle={toggleLeftSideBarModal}
-                isOpen={isOpenLeftSideBar}
                 toggleRecognitionMode={toggleRecognitionMode}
                 recognitionMode={recognitionMode}
-                toggleDebugMode={toggleDebugMode}
-                // webcamRef={webcamRef}
-                liveVideoRef={liveVideoRef}
-                // result={result}
-                // onWebCamError={onWebCamError}
-                handleRecognitionSettingUpdate={handleRecognitionSettingUpdate}
-                recognitionSettings={recognitionSettings}
-                onChangeComplete={reRunRecognition}
             />
 
             <div className="content">
+                <GestureDetector
+                    recognitionMode={recognitionMode}
+                    handleGestureSubmit={handleGestureSubmit}
+                />
+
                 <Header onSearch={handleSubmit}/>
 
                 <div className='playlist'>
