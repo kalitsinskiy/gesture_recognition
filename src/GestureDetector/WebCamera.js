@@ -1,18 +1,10 @@
 export const VIDEO_SIZE = {
+  'fixed': {width: 330, height: 185.625},
+  '1920 X 1080': {width: 1080, height: 1080},
   '640 X 480': {width: 640, height: 480},
   '640 X 360': {width: 640, height: 360},
   '360 X 270': {width: 360, height: 270}
 };
-
-export const STATE = {
-  camera: {targetFPS: 60, sizeOption: '640 X 480'},
-  backend: '',
-  flags: {},
-  modelConfig: {}
-};
-
-export const DEFAULT_LINE_WIDTH = 2;
-export const DEFAULT_RADIUS = 4;
 
 const fingerLookupIndices = {
   thumb: [0, 1, 2, 3, 4],
@@ -43,7 +35,7 @@ class WebCamera {
    * @param cameraParam From app `STATE.camera`.
    * @param onWebCamError external callback on camera setup error
    */
-  static async setupCamera(cameraParam, onWebCamError) {
+  async setupCamera(cameraParam, onWebCamError) {
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error(
@@ -66,35 +58,32 @@ class WebCamera {
         }
       };
 
-      const stream = await navigator.mediaDevices.getUserMedia(videoConfig);
-
-      const camera = new WebCamera();
-      camera.video.srcObject = stream;
+      this.video.srcObject = await navigator.mediaDevices.getUserMedia(videoConfig);
 
       await new Promise((resolve) => {
-        camera.video.onloadedmetadata = () => {
+        this.video.onloadedmetadata = () => {
           resolve();
         };
       });
 
-      await camera.video.play();
+      await this.video.play();
 
-      const videoWidth = camera.video.videoWidth;
-      const videoHeight = camera.video.videoHeight;
+      const videoWidth = this.video.videoWidth;
+      const videoHeight = this.video.videoHeight;
       // Must set below two lines, otherwise video element doesn't show.
-      camera.video.width = videoWidth;
-      camera.video.height = videoHeight;
+      this.video.width = videoWidth;
+      this.video.height = videoHeight;
 
-      camera.canvas.width = videoWidth;
-      camera.canvas.height = videoHeight;
+      this.canvas.width = videoWidth;
+      this.canvas.height = videoHeight;
       // const canvasContainer = document.querySelector('.canvas-wrapper');
       // canvasContainer.style = `width: ${videoWidth}px; height: ${videoHeight}px`;
 
       // Because the image from camera is mirrored, need to flip horizontally.
-      camera.ctx.translate(camera.video.videoWidth, 0);
-      camera.ctx.scale(-1, 1);
+      this.ctx.translate(this.video.videoWidth, 0);
+      this.ctx.scale(-1, 1);
 
-      return camera;
+      return this;
     } catch (error) {
       onWebCamError(error);
     }
@@ -139,12 +128,12 @@ class WebCamera {
       const keypointsArray = hand.keypoints;
       this.ctx.fillStyle = hand.handedness === 'Left' ? 'Red' : 'Blue';
       this.ctx.strokeStyle = 'White';
-      this.ctx.lineWidth = DEFAULT_LINE_WIDTH;
+      this.ctx.lineWidth = 2;
 
       for (let i = 0; i < keypointsArray.length; i++) {
-        const y = keypointsArray[i].x;
-        const x = keypointsArray[i].y;
-        this.drawPoint(x - 2, y - 2, 3);
+        const x = keypointsArray[i].x;
+        const y = keypointsArray[i].y;
+        this.drawPoint(x - 2, y - 2, 2);
       }
 
       const fingers = Object.keys(fingerLookupIndices);
@@ -170,7 +159,7 @@ class WebCamera {
     this.ctx.stroke(region);
   }
 
-  drawPoint(y, x, r) {
+  drawPoint(x, y, r) {
     this.ctx.beginPath();
     this.ctx.arc(x, y, r, 0, 2 * Math.PI);
     this.ctx.fill();

@@ -10,6 +10,8 @@
 
   .accordion-header {
     text-align: center;
+    font-size: 18px;
+    margin-bottom: 0;
   }
 
   .accordion-button {
@@ -19,6 +21,7 @@
   .accordion-body {
     position: relative;
     min-height: 100px;
+    margin-top: 10px;
   }
 
   .full_wrapper {

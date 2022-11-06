@@ -1,11 +1,8 @@
 export const defaultRecognitionSettings = {
-    debugMode: false,
-    detectInterval: 50, // 20fps
-    debugDetectInterval: 500, // 2fps
+    // detectInterval: 50, // 20fps
     confirmTime: 2000,
-    debugConfirmTime: 4000,
     confidence: 7.5,
-    debugConfidence: 1,
+    maxHands: 2,
 }
 
 class RecognitionSettings {

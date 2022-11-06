@@ -33,7 +33,7 @@ class Core {
 
         this.recognitionSettings = RecognitionSettings.getSettings();
 
-        this.camera = null;
+        this.camera = new WebCamera();
         this.observingRecognition = false;
     }
 
@@ -42,7 +42,8 @@ class Core {
         const config = {
             runtime: 'mediapipe', // or 'tfjs',
             solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/hands',
-            modelType: 'full'
+            modelType: 'full',
+            maxHands: this.recognitionSettings.maxHands,
         }
 
         this.detector = await createDetector(model, config);
@@ -60,8 +61,8 @@ class Core {
 
     async start() {
         try {
-            this.camera = await WebCamera.setupCamera(
-                {targetFPS: 60, sizeOption: '640 X 480'},
+            await this.camera.setupCamera(
+                {targetFPS: 60, sizeOption: 'fixed'},
                 this.onWebCamError
             );
             await this.createDetector();
@@ -79,8 +80,8 @@ class Core {
             this.detect();
             // this.recognitionInterval = setInterval(() => {
             //     this.detect();
-            // }, debugMode ? debugDetectInterval : detectInterval);
-        } catch (e) {
+            // }, detectInterval);
+        } catch (error) {
             throw new Error({
                 isOpen: true,
                 title: "Recognition Error",
@@ -90,7 +91,7 @@ class Core {
     }
 
     async reRunRecognition() {
-        this.stop();
+        window.cancelAnimationFrame(this.rafId);
         await this.start();
     }
 
@@ -109,11 +110,7 @@ class Core {
             this.camera?.video?.readyState === 4
         ) {
             const video = this.camera.video;
-            const {
-                debugMode,
-                confidence,
-                debugConfidence,
-            } = this.recognitionSettings;
+            const { confidence } = this.recognitionSettings;
 
 
             const originalEstimation = await this.detector.estimateHands(video);
@@ -129,10 +126,7 @@ class Core {
                         return { confidence: null, gesture: null };
                     }
 
-                    const result = this.gestureEstimator.estimate(
-                        hand.landmarks,
-                        debugMode ? debugConfidence : confidence,
-                    );
+                    const result = this.gestureEstimator.estimate(hand.landmarks, confidence);
 
                     if (_.isEmpty(result?.gestures)) {
                         return { confidence: null, gesture: null };
@@ -162,11 +156,7 @@ class Core {
     };
 
     confirmGesture(gesture) {
-        const {
-            debugMode,
-            confirmTime,
-            debugConfirmTime,
-        } = this.recognitionSettings;
+        const { confirmTime } = this.recognitionSettings;
 
         if (gesture !== this.tempGesture) {
             clearTimeout(this.confirmTimer);
@@ -176,7 +166,7 @@ class Core {
                 this.confirmTimer = setTimeout(() => {
                     this.handleGestureSubmit(gesture);
                     this.tempGesture = null;
-                }, debugMode ? debugConfirmTime : confirmTime);
+                }, confirmTime);
              } else {
                 this.confirmTimer = null;
             }
@@ -193,7 +183,7 @@ class Core {
             [field]: value,
         };
         RecognitionSettings.updateSetting(field, value);
-        // this.reRunRecognition();
+        this.reRunRecognition();
     }
 
     setHandleGestureSubmit(newHandleGestureSubmit) {
