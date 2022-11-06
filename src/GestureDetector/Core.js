@@ -2,7 +2,7 @@ import { createDetector, SupportedModels } from '@tensorflow-models/hand-pose-de
 import fp from "fingerpose";
 import _ from "lodash";
 import RecognitionSettings from "../utils/RecognitionSettings";
-import gestures from "../gestures";
+import gestures from "./gestures";
 
 import WebCamera from "./WebCamera";
 

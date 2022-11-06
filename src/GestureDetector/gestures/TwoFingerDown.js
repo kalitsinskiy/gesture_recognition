@@ -1,8 +1,8 @@
 import { GestureDescription } from 'fingerpose';
 
-import fingers from '../utils/fingers';
-import curls from '../utils/curls';
-import directions from '../utils/directions';
+import fingers from '../../utils/fingers';
+import curls from '../../utils/curls';
+import directions from '../../utils/directions';
 
 const { Thumb, Index, Middle, Ring, Pinky } = fingers;
 const { NoCurl, FullCurl, HalfCurl } = curls;
