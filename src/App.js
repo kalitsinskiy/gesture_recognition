@@ -11,7 +11,7 @@ import {GestureDetector} from './GestureDetector';
 
 import youtube from './apis/youtube';
 
-import gestures from "./GestureDetector/gestures";
+import { gestures } from "./GestureDetector";
 
 import initialPlayList from './initialPlayList'
 
