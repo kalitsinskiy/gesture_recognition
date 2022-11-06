@@ -1,6 +1,5 @@
 import React from 'react';
-import classNames from 'classnames';
-import WebCamIcon from "./WebCamIcon";
+import { RunButton } from "../GestureDetector";
 import InfoIcon from "./InfoIcon";
 import InstructionTooltip from "./InstructionTooltip";
 
@@ -23,14 +22,12 @@ const LeftSideBar = ({toggleRecognitionMode, recognitionMode}) => (
         <div className="bottom">
             <div className="visible-side">
                 <div className="btns-group">
-                    <button
-                        className={classNames('rec_mode btn-bg', {
-                            'active': recognitionMode,
-                        })}
-                        onClick={toggleRecognitionMode}
-                    >
-                        <WebCamIcon/>
-                    </button>
+                    <div className="btn-bg">
+                        <RunButton
+                            toggleRecognitionMode={toggleRecognitionMode}
+                            recognitionMode={recognitionMode}
+                        />
+                    </div>
 
                     <button className="info btn-bg" id="instruction-btn">
                         <InfoIcon/>

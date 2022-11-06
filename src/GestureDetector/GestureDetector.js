@@ -11,7 +11,7 @@ import _ from 'lodash';
 
 import Core from './Core';
 
-import "./styles.scss";
+import "./styles/index.scss";
 
 
 const GestureDetector = (props) => {

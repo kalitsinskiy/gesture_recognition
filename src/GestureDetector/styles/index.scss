@@ -1,4 +1,6 @@
-@import "./src/styles/variables";
+@import "./variables";
+@import '~react-input-range/lib/css/index.css';
+@import '~bootstrap/dist/css/bootstrap.css';
 
 .panel {
   width: 350px;
@@ -7,6 +9,7 @@
   top: 10px;
   padding: 10px;
   background: white;
+  z-index: 3;
 
   .accordion-header {
     text-align: center;
@@ -91,5 +94,85 @@
 
   canvas {
     width: 100%;
+  }
+}
+
+.run-button {
+  height: 1.75rem;
+  width: 1.75rem;
+  //box-shadow: 0 0 0 6px #242424 !important;
+  //background-color: #242424 !important;
+  //border-radius: 50%;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  &.active {
+    svg > g {
+      fill: red
+    }
+  }
+}
+
+button {
+  border: none;
+  outline: none;
+  padding: 0;
+  background: none;
+  transition: opacity $transition;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+  }
+}
+
+.instruction-tooltip {
+  &.show {
+    opacity: 1;
+  }
+
+  .tooltip-inner {
+    max-width: initial;
+    padding: $small-length-second;
+
+    .title {
+      margin-bottom: $medium-length-first;
+    }
+
+    .gesture_wrapper {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: $medium-length-first;
+
+      .gesture {
+        width: 130px;
+
+        &__img {
+          width: 40px;
+        }
+
+        &__description {
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+.input-range {
+  &__track {
+    &--active {
+      background: $main-primary;
+    }
+  }
+
+  &__slider-container {
+    .input-range__slider {
+      background: $main-primary;
+      border: 1px solid $main-primary;
+    }
   }
 }

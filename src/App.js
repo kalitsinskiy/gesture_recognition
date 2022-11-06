@@ -7,7 +7,7 @@ import Header from './components/Header';
 import LeftSideBar from './components/LeftSideBar';
 import ErrorNotificationPopup from './components/ErrorNotificationPopup';
 
-import GestureDetector from './GestureDetector/GestureDetector';
+import {GestureDetector} from './GestureDetector';
 
 import youtube from './apis/youtube';
 
@@ -201,16 +201,17 @@ const App = () => {
 
     return (
         <div className="main-wrapper">
+            <GestureDetector
+                recognitionMode={recognitionMode}
+                handleGestureSubmit={handleGestureSubmit}
+            />
+
             <LeftSideBar
                 toggleRecognitionMode={toggleRecognitionMode}
                 recognitionMode={recognitionMode}
             />
 
             <div className="content">
-                <GestureDetector
-                    recognitionMode={recognitionMode}
-                    handleGestureSubmit={handleGestureSubmit}
-                />
 
                 <Header onSearch={handleSubmit}/>
 

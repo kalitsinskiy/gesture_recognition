@@ -29,71 +29,18 @@ body {
   }
 }
 
-button {
+.btn-bg {
   border: none;
   outline: none;
   padding: 0;
   background: none;
   transition: opacity $transition;
+  box-shadow: 0 0 0 6px $dark-darken !important;
+  background-color: $dark-darken !important;
+  border-radius: 50%;
+  margin-bottom: 24px;
 
-  &:disabled {
-    opacity: 0.5;
-    //pointer-events: none;
-    cursor: not-allowed !important;
-  }
-
-  &.btn-bg {
-    box-shadow: 0 0 0 6px $dark-darken !important;
-    background-color: $dark-darken !important;
-    border-radius: 50%;
-  }
-}
-
-.input-range {
-  &__track {
-    &--active {
-      background: $main-primary;
-    }
-  }
-
-  &__slider-container {
-    .input-range__slider {
-      background: $main-primary;
-      border: 1px solid $main-primary;
-    }
-  }
-}
-
-
-.instruction-tooltip {
-  &.show {
-    opacity: 1;
-  }
-
-  .tooltip-inner {
-    max-width: initial;
-    padding: $small-length-second;
-
-    .title {
-      margin-bottom: $medium-length-first;
-    }
-
-    .gesture_wrapper {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-gap: $medium-length-first;
-
-      .gesture {
-        width: 130px;
-
-        &__img {
-          width: 40px;
-        }
-
-        &__description {
-          margin: 0;
-        }
-      }
-    }
+  &:last-child {
+    margin-bottom: 0;
   }
 }
